@@ -1,0 +1,17 @@
+{
+  "name": "test01",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "enum": "^2.5.0",
+    "lodash": "^4.17.5",
+    "pad-left": "^2.1.0",
+    "uuid": "^3.2.1"
+  }
+}

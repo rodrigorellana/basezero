@@ -1,0 +1,55 @@
+{
+    "bedStatus": [
+        {
+            "name": "Liberada",
+            "description": "",
+            "blocked": false
+        },
+        {
+            "name": "Ocupada",
+            "description": "",
+            "blocked": false
+        }
+    ],
+    "identificationType": {
+        "AutomaticQR": 1,
+        "AutomaticBars": 2,
+        "AutomaticString": 3,
+        "ManualString": 4
+    },
+    "messages": [
+        {
+            "default": {
+                "ok": "Proceso correcto",
+                "error": "Hubo un error al procesar la acción, favor intente nuevamente"
+            }
+        },
+        {
+            "identificationType": [
+                {
+                    "id": 1,
+                    "ok": "Código QR generado correctamente",
+                    "error": "Hubo un error al generar el código QR"
+                }
+            ]
+        },
+        {
+            "bedStatus": [
+                {
+                    "id": "Liberada",
+                    "ok": "La cama ha sido liberada correctamente",
+                    "error": "Hubo un error al liberar la cama"
+                },
+                {
+                    "id": "Ocupada",
+                    "ok": "La cama ha sido ocupada correctamente",
+                    "error": "Hubo un error al ocupar la cama"
+                }
+            ]
+        }
+    ],
+    "Flags": {
+        "IdentifyBed": 1,
+        "ManageBed": 2
+    }
+}

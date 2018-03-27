@@ -28,7 +28,7 @@ class Enclosure {
             return { error: codeError, message: obj, object: data };
         }
         else {
-            var filter = (obj.filter.name ? obj.filter.name : obj.filter);
+            var filter = (obj.filter.name ? obj.filter.name : obj.filter); //asd
             var context = ((obj.context && obj.context.name) ? obj.context.name : obj.context);
 
             var ok = (success ? 'ok' : 'error');

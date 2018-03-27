@@ -21,14 +21,14 @@ colors.setTheme({
 
 class Enclosure {
 
-    getMessages(context) {
-        var bedStatus = _.filter(this.galeno.getMessages(), x => Object.keys(x)[0] === context)[0];
-        var array = bedStatus[context];
-        return array; this.main.messages.bedStatus;
+    // getMessages(context) {
+    //     var bedStatus = _.filter(this.galeno.getMessages(), x => Object.keys(x)[0] === context)[0];
+    //     var array = bedStatus[context];
+    //     return array; this.main.messages.bedStatus;
 
-        // var localBedStatus = _.filter(this.main.messages, x =>  Object.keys(x)[0] === context)[0];
-        // array = localBedStatus[context];
-    }
+    //     // var localBedStatus = _.filter(this.main.messages, x =>  Object.keys(x)[0] === context)[0];
+    //     // array = localBedStatus[context];
+    // }
 
     constructor() {
         //get all this from cache
@@ -248,18 +248,19 @@ class Enclosure {
             };
         }
 
-        if (identificationType == enumTypes.AutomaticQR) {
+        // if (identificationType == enumTypes.AutomaticQR) {
 
-        }
-        else if (identificationType == enumTypes.AutomaticBars) {
+        // }
+        // else if (identificationType == enumTypes.AutomaticBars) {
 
-        }
-        else if (identificationType == enumTypes.AutomaticString) {
+        // }
+        // else 
+        if (identificationType == enumTypes.AutomaticString) {
             bed.code = this.getCodeRandomString();
         }
-        else if (identificationType == enumTypes.ManualString) {
+        // else if (identificationType == enumTypes.ManualString) {
 
-        }
+        // }
 
         bed.identificationType = enumTypes.get(identificationType);
         currentBed = bed;

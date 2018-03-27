@@ -1,5 +1,5 @@
-var prompt = require('prompt');
-var util = require('util');
+// var prompt = require('prompt');
+// var util = require('util');
 var mainEvent = require('./event');
 var mainDestiny = require('./destiny');
 
@@ -42,7 +42,7 @@ eventEnviar.SetUserProfiles('Storage Supervisor', 'Customs Supervisor', 'Transpo
 eventEnviar.SetDestiny(destinys);
 
 eventEnviar.States[0].doLogic = function (e) { //at first STATE do....
-    console.log('\tDo logic from event change state');
+    console.log('\tDo logic from event change state', e);
     // e.AlertTo('Storage Supervisor')
 };
 

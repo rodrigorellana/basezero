@@ -1,6 +1,5 @@
 
 var enclosureLib = require('./enclosure/enclosure');
-var util = require('util');
 
 var universe = require('./enclosure/enclosureUniverse.json')
 // test
@@ -9,16 +8,16 @@ console.log(1);
 
 enclosure.createUniverse(universe);
 
-var beds = enclosure.beds;
-var bed = beds[12];
+// var beds = enclosure.beds;
+// var bed = beds[12];
 
 console.log(enclosure.getUniverse());
 
-var b1 = enclosure.releaseBed();
-var b2 = enclosure.releaseBed(bed);
+// var b1 = enclosure.releaseBed();
+// var b2 = enclosure.releaseBed(bed);
 
-// console.log(enclosure.getUniverse());
-var b3 = enclosure.takeBed();
+// // console.log(enclosure.getUniverse());
+// var b3 = enclosure.takeBed();
 
 console.log(enclosure.getUniverse());
 

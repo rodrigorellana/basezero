@@ -48,7 +48,7 @@ class Event {
   {
       if (this.CurrentState.doLogic)
       {
-        console.log('\tState have logic!')
+        console.log('\tState have logic!', oldState)
         this.CurrentState.doLogic(this);
       }
   }

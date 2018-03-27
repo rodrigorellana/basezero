@@ -21,14 +21,24 @@ colors.setTheme({
 
 class Enclosure {
 
-    // getMessages(context) {
-    //     var bedStatus = _.filter(this.galeno.getMessages(), x => Object.keys(x)[0] === context)[0];
-    //     var array = bedStatus[context];
-    //     return array; this.main.messages.bedStatus;
+    getMessage(obj, success, data) {
+        var filter = (obj.filter.name ? obj.filter.name : obj.filter);
+        var ok = (success ? 'ok' : 'error');
+        this.msg = '';
+        var galenoFirst = utils.findMessage(this.galeno.getMessages(), obj.context, filter);
+        if (galenoFirst.length > 0)
+            this.msg = galenoFirst[0][ok];
+        else {
+            var localSecond = utils.findMessage(this.main.messages, obj.context, filter);
+            if (localSecond.length > 0)
+                this.msg = localSecond[0][ok];
+        }
 
-    //     // var localBedStatus = _.filter(this.main.messages, x =>  Object.keys(x)[0] === context)[0];
-    //     // array = localBedStatus[context];
-    // }
+        if (!utils.validString(this.msg))
+            this.msg = utils.findMessage(this.galeno.getMessages(), 'default', null)[ok];
+
+        return { error: 0, message: this.msg, object: data };
+    }
 
     constructor() {
         //get all this from cache
@@ -44,12 +54,13 @@ class Enclosure {
         this.galenoBedStatus = this.galeno.getBedStatus();
         this.main.complex = this.main.complex.concat(this.galeno.getComplex());
 
-        // var gal = this.galeno.getMessages();
-        // this.main.messages.concat(this.getMessages('bedStatus'));
-
         this.config = {};
         this.config.ocupedStatus = _.filter(this.galenoBedStatus, x => x.name === "Ocupada")[0];
         this.config.releaseStatus = _.filter(this.galenoBedStatus, x => x.name === "Liberada")[0];
+        this.config.bedStatus = 'bedStatus';
+
+        var a = this.getMessage({ context: this.config.bedStatus, filter: this.config.releaseStatus }, true, null);
+        var b = this.getMessage({ context: this.config.bedStatuss, filter: this.config.releaseStatus }, true, null);
     }
 
     getBedStatus(status, fromMain) {
@@ -219,7 +230,7 @@ class Enclosure {
         var main = this;
         do {
             flag = main.getFlag(1);
-        } while (flag === true)
+        } while (flag === true);
 
         var allBeds = this.getAllBeds();
         var res = [];
@@ -227,11 +238,11 @@ class Enclosure {
         var code = null;
         do {
             let s3 = this.main.id.substring(0, 3);
-            var abr = utils.padLeft(cnt, this.main.bedLenghtCode, '0')
+            var abr = utils.padLeft(cnt, this.main.bedLenghtCode, '0');
             code = s3 + '-' + abr;
             res = _.filter(allBeds, x => x.code === code);
             cnt++;
-        } while (res.length > 0)
+        } while (res.length > 0);
 
         main.setFlag(1, false);
         return code;
@@ -276,7 +287,7 @@ class Enclosure {
         areas.forEach(function (area) {
             var hasSame = _.filter(this.main.areas, x => x.name === area.name);
             if (hasSame.length > 0)
-                exists.push(area)
+                exists.push(area);
             else {
                 this.main.areas.push(area);
                 cnt++;
@@ -287,7 +298,7 @@ class Enclosure {
         if (exists.length > 0)
             msg += `, areas existentes (${exists.length})`;
 
-        return { error: 0, message: msg, object: exists }
+        return { error: 0, message: msg, object: exists };
     }
 
     createComplex(complexs) {
@@ -296,7 +307,7 @@ class Enclosure {
         complexs.forEach(function (complex) {
             var hasSame = _.filter(this.main.complex, x => x.name === complex.name);
             if (hasSame.length > 0)
-                exists.push(complex)
+                exists.push(complex);
             else {
                 this.main.complex.push(complex);
                 cnt++;
@@ -307,7 +318,7 @@ class Enclosure {
         if (exists.length > 0)
             msg += `, complejidades existentes (${exists.length})`;
 
-        return { error: 0, message: msg, object: exists }
+        return { error: 0, message: msg, object: exists };
     }
 }
 

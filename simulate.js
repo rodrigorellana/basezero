@@ -1,23 +1,25 @@
 
 var enclosureLib = require('./enclosure/enclosure');
+var universe = require('./enclosure/enclosureUniverse.json');
 
-var universe = require('./enclosure/enclosureUniverse.json')
-// test
-const enclosure = new enclosureLib.Enclosure();
-console.log(1);
+var enclosureConfig = {
+    releaseStatus: 'Liberada',
+    takenStatus: 'Ocupada',
+    bedStatus: 'bedStatus'
+};
 
+const enclosure = new enclosureLib.Enclosure(enclosureConfig);
 enclosure.createUniverse(universe);
 
-// var beds = enclosure.beds;
-// var bed = beds[12];
+var bed12 = enclosure.beds[12];
 
 console.log(enclosure.getUniverse());
 
-// var b1 = enclosure.releaseBed();
-// var b2 = enclosure.releaseBed(bed);
+// console.log(enclosure.releaseBed());
+// console.log(enclosure.releaseBed(bed12));
 
-// // console.log(enclosure.getUniverse());
-// var b3 = enclosure.takeBed();
+// console.log(enclosure.getUniverse());
+console.log(enclosure.takeBed());
 
 console.log(enclosure.getUniverse());
 
@@ -44,7 +46,8 @@ console.log(enclosure.createComplex(complex));
 // console.log(b3.internalId);
 
 // console.log(enclosure.identifyBed(b1, 3));
-// console.log(enclosure.identifyBed(b2, 3));
+bed12.code = 'asd';
+console.log(enclosure.identifyBed(bed12, 3));
 // console.log(enclosure.identifyBed(b3, 3));
 
 

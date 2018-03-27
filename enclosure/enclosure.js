@@ -22,26 +22,38 @@ colors.setTheme({
 class Enclosure {
 
     getMessage(obj, success, data) {
-        var filter = (obj.filter.name ? obj.filter.name : obj.filter);
-        var ok = (success ? 'ok' : 'error');
-        this.msg = '';
-        var galenoFirst = utils.findMessage(this.galeno.getMessages(), obj.context, filter);
-        if (galenoFirst.length > 0)
-            this.msg = galenoFirst[0][ok];
-        else {
-            var localSecond = utils.findMessage(this.main.messages, obj.context, filter);
-            if (localSecond.length > 0)
-                this.msg = localSecond[0][ok];
+        var codeError = (success ? 0 : 500);
+
+        if (!obj.filter && !obj.context) {
+            return { error: codeError, message: obj, object: data };
         }
+        else {
+            var filter = (obj.filter.name ? obj.filter.name : obj.filter);
+            var context = ((obj.context && obj.context.name) ? obj.context.name : obj.context);
 
-        if (!utils.validString(this.msg))
-            this.msg = utils.findMessage(this.galeno.getMessages(), 'default', null)[ok];
+            var ok = (success ? 'ok' : 'error');
+            this.msg = '';
+            var galenoFirst = utils.findMessage(this.galeno.getMessages(), context, filter);
+            if (galenoFirst.length > 0)
+                this.msg = galenoFirst[0][ok];
+            else {
+                var localSecond = utils.findMessage(this.main.messages, context, filter);
+                if (localSecond.length > 0)
+                    this.msg = localSecond[0][ok];
+            }
 
-        return { error: 0, message: this.msg, object: data };
+            if (!utils.validString(this.msg))
+                this.msg = utils.findMessage(this.galeno.getMessages(), 'default', null)[ok];
+
+            return { error: codeError, message: this.msg, object: data };
+        }
     }
 
-    constructor() {
+    constructor(config) {
         //get all this from cache
+        if (!config)
+            config = utils.getDefaultConfiguration();
+
         this.main = enclosureData; //PULG enc get from datastore with and ID
         if (!this.main.areas)
             this.main.areas = [];
@@ -55,12 +67,9 @@ class Enclosure {
         this.main.complex = this.main.complex.concat(this.galeno.getComplex());
 
         this.config = {};
-        this.config.ocupedStatus = _.filter(this.galenoBedStatus, x => x.name === "Ocupada")[0];
-        this.config.releaseStatus = _.filter(this.galenoBedStatus, x => x.name === "Liberada")[0];
-        this.config.bedStatus = 'bedStatus';
-
-        var a = this.getMessage({ context: this.config.bedStatus, filter: this.config.releaseStatus }, true, null);
-        var b = this.getMessage({ context: this.config.bedStatuss, filter: this.config.releaseStatus }, true, null);
+        this.config.takenStatus = _.filter(this.galenoBedStatus, x => x.name === config.takenStatus)[0];
+        this.config.releaseStatus = _.filter(this.galenoBedStatus, x => x.name === config.releaseStatus)[0];
+        this.config.bedStatus = config.bedStatus;
     }
 
     getBedStatus(status, fromMain) {
@@ -144,7 +153,7 @@ class Enclosure {
         var setBeds = _.filter(allBeds,
             x => x.code === null
                 && x.mainStatus != null
-                && x.mainStatus.name === this.config.ocupedStatus.name
+                && x.mainStatus.name === this.config.takenStatus.name
                 && x.mainStatus.blocked == false);
         return setBeds;
     }
@@ -168,45 +177,55 @@ class Enclosure {
     }
 
     releaseBed(bed) {
-        var main = this;
+        var success = true;
         var filterBed = null;
+        var main = this;
 
-        if (!bed) {
-            var busyBeds = main.getOccupedBeds();
-            filterBed = _.sample(busyBeds);
+        try {
+            if (!bed) {
+                var busyBeds = main.getOccupedBeds();
+                filterBed = _.sample(busyBeds);
+            }
+            else if (utils.validString(bed.code))
+                filterBed = _.filter(this.getAllBeds(), x => x.code == bed.code)[0];
+            else if (utils.validString(bed.internalId))
+                filterBed = this.getBed(bed.internalId);
+
+            if (filterBed) {
+                main.changeStatusBed(filterBed, this.config.releaseStatus);
+            }
+        } catch (e) {
+            success = false;
+            filterBed = e;
         }
-        else if (utils.validString(bed.code))
-            filterBed = _.filter(this.getAllBeds(), x => x.code == bed.code)[0];
-        else if (utils.validString(bed.internalId))
-            filterBed = this.getBed(bed.internalId);
 
-        if (filterBed) {
-            main.changeStatusBed(filterBed, this.config.releaseStatus);
-            return utils.success(1, filterBed);
-        }
-
-        return null;
+        return this.getMessage({ context: this.config.bedStatus, filter: this.config.releaseStatus }, success, filterBed);
     }
 
     takeBed(bed) {
         var main = this;
+        var success = true;
         var filterBed = null;
 
-        if (!bed) {
-            var releasedBeds = main.getReleasedBeds();
-            filterBed = _.sample(releasedBeds);
-        }
-        else if (utils.validString(bed.code))
-            filterBed = _.filter(this.getAllBeds(), x => x.code == bed.code)[0];
-        else if (utils.validString(bed.internalId))
-            filterBed = this.getBed(bed.internalId);
+        try {
+            if (!bed) {
+                var releasedBeds = main.getReleasedBeds();
+                filterBed = _.sample(releasedBeds);
+            }
+            else if (utils.validString(bed.code))
+                filterBed = _.filter(this.getAllBeds(), x => x.code == bed.code)[0];
+            else if (utils.validString(bed.internalId))
+                filterBed = this.getBed(bed.internalId);
 
-        if (filterBed) {
-            main.changeStatusBed(filterBed, this.config.ocupedStatus);
-            return filterBed;
-            //PULG save bed to datastore
+            if (filterBed) {
+                main.changeStatusBed(filterBed, this.config.takenStatus);
+            }
+        } catch (e) {
+            success = false;
+            filterBed = e;
         }
-        return null;
+
+        return this.getMessage({ context: this.config.bedStatus, filter: this.config.takenStatus }, success, filterBed);
     }
 
     getFlag(flag) {
@@ -249,76 +268,90 @@ class Enclosure {
     }
 
     identifyBed(bed, identificationType) {
-        var enumTypes = new Enum(this.galeno.getIdentifycationType());
-        var currentBed = this.getBed(bed.internalId);
+        var msg = '';
+        var success = true;
+        var currentBed = null;
 
-        if (utils.validString(currentBed.code)) {
-            return {
-                error: 0,
-                message: 'La cama ya tiene codigo'
-            };
+        try {
+            var enumTypes = new Enum(this.galeno.getIdentifycationType());
+            currentBed = this.getBed(bed.internalId);
+
+            if (utils.validString(currentBed.code)) {
+                msg = 'La cama ya tiene un código asignado';
+            }
+            else {
+                if (identificationType == enumTypes.AutomaticString) {
+                    currentBed.code = this.getCodeRandomString();
+                }
+
+                currentBed.identificationType = enumTypes.get(identificationType);           
+                msg = 'La cama fue identificada correctamente';
+            }
+        }
+        catch (e) {
+            success = false;
+            msg = e;
         }
 
-        // if (identificationType == enumTypes.AutomaticQR) {
-
-        // }
-        // else if (identificationType == enumTypes.AutomaticBars) {
-
-        // }
-        // else 
-        if (identificationType == enumTypes.AutomaticString) {
-            bed.code = this.getCodeRandomString();
-        }
-        // else if (identificationType == enumTypes.ManualString) {
-
-        // }
-
-        bed.identificationType = enumTypes.get(identificationType);
-        currentBed = bed;
-        return {
-            error: 0,
-            message: 'La cama fue indetificada correctamente ' + bed.code
-        };
+        return this.getMessage(msg, success, currentBed);
     }
 
     createAreas(areas) {
         var exists = [];
-        var cnt = 0;
-        areas.forEach(function (area) {
-            var hasSame = _.filter(this.main.areas, x => x.name === area.name);
-            if (hasSame.length > 0)
-                exists.push(area);
-            else {
-                this.main.areas.push(area);
-                cnt++;
-            }
-        }, this);
+        var msg = '';
+        var success = true;
 
-        var msg = `Areas ingresadas (${cnt})`;
-        if (exists.length > 0)
-            msg += `, areas existentes (${exists.length})`;
+        try {
+            var cnt = 0;
+            areas.forEach(function (area) {
+                var hasSame = _.filter(this.main.areas, x => x.name === area.name);
+                if (hasSame.length > 0)
+                    exists.push(area);
+                else {
+                    this.main.areas.push(area);
+                    cnt++;
+                }
+            }, this);
 
-        return { error: 0, message: msg, object: exists };
+            msg = `Areas ingresadas (${cnt})`;
+            if (exists.length > 0)
+                msg += `, areas existentes (${exists.length})`;
+
+        } catch (e) {
+            msg = e;
+            success = false;
+        }
+
+        return this.getMessage(msg, success, exists);
     }
 
     createComplex(complexs) {
         var exists = [];
-        var cnt = 0;
-        complexs.forEach(function (complex) {
-            var hasSame = _.filter(this.main.complex, x => x.name === complex.name);
-            if (hasSame.length > 0)
-                exists.push(complex);
-            else {
-                this.main.complex.push(complex);
-                cnt++;
-            }
-        }, this);
+        var msg = '';
+        var success = true;
 
-        var msg = `Complejidades ingresadas (${cnt})`;
-        if (exists.length > 0)
-            msg += `, complejidades existentes (${exists.length})`;
+        try {
+            var cnt = 0;
+            complexs.forEach(function (complex) {
+                var hasSame = _.filter(this.main.complex, x => x.name === complex.name);
+                if (hasSame.length > 0)
+                    exists.push(complex);
+                else {
+                    this.main.complex.push(complex);
+                    cnt++;
+                }
+            }, this);
 
-        return { error: 0, message: msg, object: exists };
+            msg = `Complejidades ingresadas (${cnt})`;
+            if (exists.length > 0)
+                msg += `, complejidades existentes (${exists.length})`;
+
+        } catch (e) {
+            msg = e;
+            success = false;
+        }
+
+        return this.getMessage(msg, success, exists);
     }
 }
 

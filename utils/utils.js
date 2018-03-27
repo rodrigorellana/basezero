@@ -22,19 +22,28 @@ exports.validString = function (val) {
         return false;
 
     return true;
-}
+};
 
 exports.padLeft = function (str, quantity, chr) {
     return pad(str, quantity, chr);
-}
+};
 
 exports.generateGUID = function () {
     return uuidV4();
-}
+};
 
 exports.success = function (msg, bed) {
     return {
         error: 0,
         message: 'La cama fue indetificada correctamente ' + bed.code
     };
-}
+};
+
+exports.getDefaultConfiguration = function () {
+    return {
+        releaseStatus: 'Liberada',
+        takenStatus: 'Ocupada',
+        bedStatus: 'bedStatus'
+    };
+};
+

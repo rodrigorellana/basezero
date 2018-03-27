@@ -22,6 +22,24 @@ var b3 = enclosure.takeBed();
 
 console.log(enclosure.getUniverse());
 
+var complex = [
+    {
+        name: "UTI",
+        description: ""
+    },
+    {
+        name: "NEO",
+    }
+    ,
+    {
+        name: "NEasdO",
+    }
+];
+
+console.log(enclosure.createComplex(complex));
+
+
+
 // console.log(b1.internalId);
 // console.log(b2.internalId);
 // console.log(b3.internalId);

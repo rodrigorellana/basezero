@@ -27,7 +27,7 @@
         {
             "identificationType": [
                 {
-                    "id": 1,
+                    "id": "AutomaticQR",
                     "ok": "Código QR generado correctamente",
                     "error": "Hubo un error al generar el código QR"
                 }
@@ -48,8 +48,22 @@
             ]
         }
     ],
-    "Flags": {
+    "flags": {
         "IdentifyBed": 1,
         "ManageBed": 2
-    }
+    },
+    "complex": [
+        {
+            "name": "UTI",
+            "description": ""
+        },
+        {
+            "name": "UCI",
+            "description": ""
+        },
+        {
+            "name": "NEO",
+            "description": ""
+        }
+    ]
 }

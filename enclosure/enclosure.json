@@ -20,6 +20,7 @@
             "description": ""
         }
     ],
+    "complex": [],
     "bedStatus": [
         {
             "name": "En mantencion",

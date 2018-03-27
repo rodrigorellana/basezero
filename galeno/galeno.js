@@ -21,7 +21,11 @@ class Galeno {
     }
     getFlags()
     {
-        return this.main.Flags;
+        return this.main.flags;
+    }
+    getComplex()
+    {
+        return this.main.complex;
     }
 }
 

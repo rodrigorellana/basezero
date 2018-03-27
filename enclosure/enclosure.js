@@ -21,23 +21,31 @@ colors.setTheme({
 
 class Enclosure {
 
+    getMessages(context) {
+        var bedStatus = _.filter(this.galeno.getMessages(), x => Object.keys(x)[0] === context)[0];
+        var array = bedStatus[context];
+        return array; this.main.messages.bedStatus;
+
+        // var localBedStatus = _.filter(this.main.messages, x =>  Object.keys(x)[0] === context)[0];
+        // array = localBedStatus[context];
+    }
+
     constructor() {
         //get all this from cache
         this.main = enclosureData; //PULG enc get from datastore with and ID
+        if (!this.main.areas)
+            this.main.areas = [];
+
+        if (!this.main.context)
+            this.main.context = [];
+
         this.galeno = new galeno.Galeno;
         this.flagsTypes = new Enum(this.galeno.getFlags());
         this.galenoBedStatus = this.galeno.getBedStatus();
-        this.messages = this.galeno.getMessages()
-        _.forEach(this.messages, function(typeMessage){
-            console.log(typeMessage);
+        this.main.complex = this.main.complex.concat(this.galeno.getComplex());
 
-            Object.keys(typeMessage).forEach(function (test) {
-                var messages = typeMessage[test];
-               
-            });
-        });
-
-        this.messages.bedStatus.concat(this.main.messages.bedStatus);
+        // var gal = this.galeno.getMessages();
+        // this.main.messages.concat(this.getMessages('bedStatus'));
 
         this.config = {};
         this.config.ocupedStatus = _.filter(this.galenoBedStatus, x => x.name === "Ocupada")[0];
@@ -259,6 +267,46 @@ class Enclosure {
             error: 0,
             message: 'La cama fue indetificada correctamente ' + bed.code
         };
+    }
+
+    createAreas(areas) {
+        var exists = [];
+        var cnt = 0;
+        areas.forEach(function (area) {
+            var hasSame = _.filter(this.main.areas, x => x.name === area.name);
+            if (hasSame.length > 0)
+                exists.push(area)
+            else {
+                this.main.areas.push(area);
+                cnt++;
+            }
+        }, this);
+
+        var msg = `Areas ingresadas (${cnt})`;
+        if (exists.length > 0)
+            msg += `, areas existentes (${exists.length})`;
+
+        return { error: 0, message: msg, object: exists }
+    }
+
+    createComplex(complexs) {
+        var exists = [];
+        var cnt = 0;
+        complexs.forEach(function (complex) {
+            var hasSame = _.filter(this.main.complex, x => x.name === complex.name);
+            if (hasSame.length > 0)
+                exists.push(complex)
+            else {
+                this.main.complex.push(complex);
+                cnt++;
+            }
+        }, this);
+
+        var msg = `Complejidades ingresadas (${cnt})`;
+        if (exists.length > 0)
+            msg += `, complejidades existentes (${exists.length})`;
+
+        return { error: 0, message: msg, object: exists }
     }
 }
 

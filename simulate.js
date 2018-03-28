@@ -5,21 +5,25 @@ var universe = require('./enclosure/enclosureUniverse.json');
 var enclosureConfig = {
     releaseStatus: 'Liberada',
     takenStatus: 'Ocupada',
-    bedStatus: 'bedStatus'
+    bedStatus: 'bedStatus',
+    notFoundStatus : 'Inexistente'
 };
 
 const enclosure = new enclosureLib.Enclosure(enclosureConfig);
 enclosure.createUniverse(universe);
 
 var bed12 = enclosure.beds[12];
+let newBed = Object.assign({}, bed12);
 
 console.log(enclosure.getUniverse());
-
-// console.log(enclosure.releaseBed());
+//newBed.code = 'asds';
+//console.log(enclosure.releaseBed(newBed));
 // console.log(enclosure.releaseBed(bed12));
 
 // console.log(enclosure.getUniverse());
 console.log(enclosure.takeBed());
+newBed.code='asd';
+console.log(enclosure.takeBed(newBed));
 
 console.log(enclosure.getUniverse());
 

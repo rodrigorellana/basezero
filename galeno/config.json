@@ -45,6 +45,11 @@
                     "id": "Ocupada",
                     "ok": "La cama ha sido ocupada correctamente",
                     "error": "Hubo un error al ocupar la cama"
+                },
+                {
+                    "id": "Inexistente",
+                    "ok": "",
+                    "error": "La cama no fue encontrada"
                 }
             ]
         }

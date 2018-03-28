@@ -2,19 +2,28 @@ const pad = require('pad-left');
 const uuidV4 = require('uuid/v4');
 var _ = require('lodash');
 
-exports.findMessage = function (array, context, filter) {
-    let arrayResult = _.filter(array, x => Object.keys(x)[0] === context);
-    let arrMsg = [];
+exports.findMessage = function (array, findObject, success) {
+    var ok = (success ? 'ok' : 'error');
+    let arrayResult = _.filter(array, x => Object.keys(x)[0] === findObject.context);
+    let outMsg = '';
     if (arrayResult.length > 0) {
         arrayResult.forEach(function (result) {
-            if (filter == null)
-                arrMsg = result[context];
+            if (findObject.filter == null)
+                arrMsg = result[findObject.context];
             else
-                arrMsg = _.filter(result[context], x => x.id === filter);
+                arrMsg = _.filter(result[findObject.context], x => x.id === findObject.filter);
+
+            if (arrMsg.length && arrMsg.length > 0) {
+                outMsg = arrMsg[0][ok];
+                return;
+            }
+            else if (arrMsg[ok]) {
+                outMsg = arrMsg[ok];
+                return;
+            }
         });
     }
-
-    return arrMsg;
+    return outMsg;
 };
 
 exports.validString = function (val) {

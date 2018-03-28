@@ -28,22 +28,29 @@ class Enclosure {
             return { error: codeError, message: obj, object: data };
         }
         else {
-            var filter = (obj.filter.name ? obj.filter.name : obj.filter); //asd
+            var filter = {};
+            var secondFilter = null;
+            if (obj.filter && !obj.filter.first)
+                filter = (obj.filter.name ? obj.filter.name : obj.filter);
+            else if (obj.filter.first) {
+                filter = (obj.filter.first.name ? obj.filter.first.name : obj.filter.first);
+                secondFilter = (obj.filter.second.name ? obj.filter.second.name : obj.filter.second);
+            }
             var context = ((obj.context && obj.context.name) ? obj.context.name : obj.context);
+            var galenoMessages = this.galeno.getMessages();
 
-            var ok = (success ? 'ok' : 'error');
-            this.msg = '';
-            var galenoFirst = utils.findMessage(this.galeno.getMessages(), context, filter);
-            if (galenoFirst.length > 0)
-                this.msg = galenoFirst[0][ok];
-            else {
-                var localSecond = utils.findMessage(this.main.messages, context, filter);
-                if (localSecond.length > 0)
-                    this.msg = localSecond[0][ok];
+            this.msg = utils.findMessage(galenoMessages, { context: context, filter: filter }, success);
+            if (!utils.validString(this.msg))
+                this.msg = utils.findMessage(this.main.messages, { context: context, filter: filter }, success);
+
+            if (utils.validString(secondFilter)) {
+                let sfilter = utils.findMessage(galenoMessages, { context: context, filter: secondFilter }, success);
+                if (utils.validString(sfilter))
+                    this.msg += ': ' + sfilter;
             }
 
             if (!utils.validString(this.msg))
-                this.msg = utils.findMessage(this.galeno.getMessages(), 'default', null)[ok];
+                this.msg = utils.findMessage(galenoMessages, { context: 'default' }, success);
 
             return { error: codeError, message: this.msg, object: data };
         }
@@ -66,10 +73,9 @@ class Enclosure {
         this.galenoBedStatus = this.galeno.getBedStatus();
         this.main.complex = this.main.complex.concat(this.galeno.getComplex());
 
-        this.config = {};
+        this.config = config;
         this.config.takenStatus = _.filter(this.galenoBedStatus, x => x.name === config.takenStatus)[0];
         this.config.releaseStatus = _.filter(this.galenoBedStatus, x => x.name === config.releaseStatus)[0];
-        this.config.bedStatus = config.bedStatus;
     }
 
     getBedStatus(status, fromMain) {
@@ -176,56 +182,66 @@ class Enclosure {
         return bed[0];
     }
 
-    releaseBed(bed) {
+    releaseBed(bedSearch) {
         var success = true;
-        var filterBed = null;
+        var bedFound = null;
         var main = this;
+        var filterMsg = this.config.releaseStatus;
 
         try {
-            if (!bed) {
+            if (!bedSearch) {
                 var busyBeds = main.getOccupedBeds();
-                filterBed = _.sample(busyBeds);
+                bedFound = _.sample(busyBeds);
             }
-            else if (utils.validString(bed.code))
-                filterBed = _.filter(this.getAllBeds(), x => x.code == bed.code)[0];
-            else if (utils.validString(bed.internalId))
-                filterBed = this.getBed(bed.internalId);
+            else if (utils.validString(bedSearch.code))
+                bedFound = _.filter(this.getAllBeds(), x => x.code == bedSearch.code)[0];
+            else if (utils.validString(bedSearch.internalId))
+                bedFound = this.getBed(bedSearch.internalId);
 
-            if (filterBed) {
-                main.changeStatusBed(filterBed, this.config.releaseStatus);
+            if (bedFound) {
+                main.changeStatusBed(bedFound, this.config.releaseStatus);
+            } else {
+                filterMsg = { first: filterMsg, second: this.config.notFoundStatus };
+                bedFound = bedSearch;
+                success = false;
             }
         } catch (e) {
             success = false;
-            filterBed = e;
+            bedFound = e;
         }
 
-        return this.getMessage({ context: this.config.bedStatus, filter: this.config.releaseStatus }, success, filterBed);
+        return this.getMessage({ context: this.config.bedStatus, filter: filterMsg }, success, bedFound);
     }
 
-    takeBed(bed) {
+    takeBed(bedSearch) {
         var main = this;
         var success = true;
-        var filterBed = null;
+        var bedFound = null;
+        var filterMsg = this.config.takenStatus;
 
         try {
-            if (!bed) {
+            if (!bedSearch) {
                 var releasedBeds = main.getReleasedBeds();
-                filterBed = _.sample(releasedBeds);
+                bedFound = _.sample(releasedBeds);
             }
-            else if (utils.validString(bed.code))
-                filterBed = _.filter(this.getAllBeds(), x => x.code == bed.code)[0];
-            else if (utils.validString(bed.internalId))
-                filterBed = this.getBed(bed.internalId);
+            else if (utils.validString(bedSearch.code))
+                bedFound = _.filter(this.getAllBeds(), x => x.code == bedSearch.code)[0];
+            else if (utils.validString(bedSearch.internalId))
+                bedFound = this.getBed(bedSearch.internalId);
 
-            if (filterBed) {
-                main.changeStatusBed(filterBed, this.config.takenStatus);
+            if (bedFound) {
+                main.changeStatusBed(bedFound, this.config.takenStatus);
+            } else {
+                filterMsg = { first: filterMsg, second: this.config.notFoundStatus };
+                bedFound = bedSearch;
+                success = false;
             }
         } catch (e) {
             success = false;
-            filterBed = e;
+            bedFound = e;
         }
 
-        return this.getMessage({ context: this.config.bedStatus, filter: this.config.takenStatus }, success, filterBed);
+        return this.getMessage({ context: this.config.bedStatus, filter: filterMsg }, success, bedFound);
     }
 
     getFlag(flag) {
@@ -273,18 +289,18 @@ class Enclosure {
         var currentBed = null;
 
         try {
-            var enumTypes = new Enum(this.galeno.getIdentifycationType());
             currentBed = this.getBed(bed.internalId);
 
             if (utils.validString(currentBed.code)) {
                 msg = 'La cama ya tiene un código asignado';
             }
             else {
+                var enumTypes = new Enum(this.galeno.getIdentifycationType());
                 if (identificationType == enumTypes.AutomaticString) {
                     currentBed.code = this.getCodeRandomString();
                 }
 
-                currentBed.identificationType = enumTypes.get(identificationType);           
+                currentBed.identificationType = enumTypes.get(identificationType);
                 msg = 'La cama fue identificada correctamente';
             }
         }

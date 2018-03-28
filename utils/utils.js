@@ -6,6 +6,7 @@ exports.findMessage = function (array, findObject, success) {
     var ok = (success ? 'ok' : 'error');
     let arrayResult = _.filter(array, x => Object.keys(x)[0] === findObject.context);
     let outMsg = '';
+    var arrMsg = {};
     if (arrayResult.length > 0) {
         arrayResult.forEach(function (result) {
             if (findObject.filter == null)
@@ -15,11 +16,11 @@ exports.findMessage = function (array, findObject, success) {
 
             if (arrMsg.length && arrMsg.length > 0) {
                 outMsg = arrMsg[0][ok];
-                return;
+                return false;
             }
             else if (arrMsg[ok]) {
                 outMsg = arrMsg[ok];
-                return;
+                return false;
             }
         });
     }

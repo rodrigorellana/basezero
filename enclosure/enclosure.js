@@ -39,12 +39,12 @@ class Enclosure {
             var context = ((obj.context && obj.context.name) ? obj.context.name : obj.context);
             var galenoMessages = this.galeno.getMessages();
 
-            this.msg = utils.findMessage(galenoMessages, { context: context, filter: filter }, success);
+            this.msg = utils.findMessage(galenoMessages, { context, filter }, success);
             if (!utils.validString(this.msg))
-                this.msg = utils.findMessage(this.main.messages, { context: context, filter: filter }, success);
+                this.msg = utils.findMessage(this.main.messages, { context, filter }, success);
 
             if (utils.validString(secondFilter)) {
-                let sfilter = utils.findMessage(galenoMessages, { context: context, filter: secondFilter }, success);
+                let sfilter = utils.findMessage(galenoMessages, { context, filter: secondFilter }, success);
                 if (utils.validString(sfilter))
                     this.msg += ': ' + sfilter;
             }

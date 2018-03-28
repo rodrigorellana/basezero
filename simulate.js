@@ -6,7 +6,7 @@ var enclosureConfig = {
     releaseStatus: 'Liberada',
     takenStatus: 'Ocupada',
     bedStatus: 'bedStatus',
-    notFoundStatus : 'Inexistente'
+    notFoundStatus: 'Inexistente'
 };
 
 const enclosure = new enclosureLib.Enclosure(enclosureConfig);
@@ -22,7 +22,7 @@ console.log(enclosure.getUniverse());
 
 // console.log(enclosure.getUniverse());
 console.log(enclosure.takeBed());
-newBed.code='asd';
+newBed.code = 'asd';
 console.log(enclosure.takeBed(newBed));
 
 console.log(enclosure.getUniverse());

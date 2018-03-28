@@ -8,7 +8,6 @@ class EventState {
     this.someThingElse = 123;
   }
 }
-
 class UserProfile {
   constructor(userProfileName)
   {
@@ -48,7 +47,7 @@ class Event {
   {
       if (this.CurrentState.doLogic)
       {
-        console.log('\tState have logic!', oldState)
+        console.log('\tState have logic!', oldState);
         this.CurrentState.doLogic(this);
       }
   }
@@ -108,7 +107,7 @@ class Event {
   {       
       if (this.Destiny.Stages[neww].doLogic)
       {
-        console.log('\tStage have logic!')
+        console.log('\tStage have logic!');
         this.Destiny.Stages[neww].doLogic(this);
       }
   }
@@ -124,7 +123,7 @@ class Event {
 
     if (this.onStart)
     {
-       console.log('\tStart have logic!')
+       console.log('\tStart have logic!');
        this.onStart(fromEvent);
     }
 
@@ -153,6 +152,6 @@ class Event {
 
 exports.world = function () {
   console.log('Hellodddd World');
-}
+};
 
 exports.Event = Event;

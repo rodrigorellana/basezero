@@ -14,7 +14,7 @@ eventRechazar.onStart = function (e) {
     console.log('\tOn start REJECTED event');   
     var msg = "dear user this item was rejected: " + e.MainObject.description + ", on stage : " + e.CurrentStage.name;
     e.MessageTo("someEmails@gmail.com", msg);
-}
+};
 // --------------------------
 
 var solicitud = { //may be anything, even a array
@@ -22,7 +22,7 @@ var solicitud = { //may be anything, even a array
     width: 100.45,
     weight: 100,
     length: 300.67
-}
+};
 
 //must order be important !!
 var destinys = new mainDestiny.Destiny("Ensure storage amount", 
@@ -48,13 +48,13 @@ eventEnviar.States[0].doLogic = function (e) { //at first STATE do....
 
 eventEnviar.SetStageLogic(0, function (e) { //at first stage step do....
     console. log('\tDo logic from event');     
-    e.AlertTo('Storage Supervisor')
+    e.AlertTo('Storage Supervisor');
     e.SetCurrentState(0); //change to StockRevision state
 }); 
 
 
 eventEnviar.SetStageLogic(1, function (e) { //at send to custom stage step do....      
-    e.AlertTo('Transporters')
+    e.AlertTo('Transporters');
    // e.SetCurrentState(0); //change to StockRevision state
 }); 
 

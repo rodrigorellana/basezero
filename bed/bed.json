@@ -7,5 +7,24 @@
     ],
     "enclosureId": null,
     "mainStatus": null,
-    "localStatus": null
+    "localStatus": null,
+    "complex": [{
+            "name": "UTI",
+            "description": ""
+        },
+        {}
+    ],
+    "artifacts": {
+        "needArtifactAssurance": false,
+        "artifactAssurance": false,
+        "artifacts": [{
+            "name": "Respirador",
+            "description": "",
+            "exists": false
+        }, {
+            "name": "Oxigenador",
+            "description": "",
+            "exists": true
+        }]
+    }
 }

@@ -164,7 +164,7 @@ class Enclosure {
         return setBeds;
     }
 
-    getReleasedBeds() {
+    getReleasedBeds(options) {
         var allBeds = this.getAllBeds();
 
         var setBeds = _.filter(allBeds,
@@ -211,6 +211,21 @@ class Enclosure {
         }
 
         return this.getMessage({ context: this.config.bedStatus, filter: filterMsg }, success, bedFound);
+    }
+
+    requestBed(bedRequest) {
+        
+    }
+
+    findBed(bedFind)
+    {
+    //     Paso 1. Buscar cama idéntica
+    //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
+        
+    //     Paso 2. Buscar cama similar
+    //     Entre todas las camas actuales liberadas del recinto, buscar la que tenga similares características a la solicitada. 
+        
+
     }
 
     takeBed(bedSearch) {

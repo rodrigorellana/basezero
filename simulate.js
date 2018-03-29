@@ -1,6 +1,13 @@
 
 var enclosureLib = require('./enclosure/enclosure');
 var universe = require('./enclosure/enclosureUniverse.json');
+var _ = require('lodash');
+
+var o1 = { a: 1, b: 2, c: { d: 1 } };
+var o2 = { c: { d: 1 }, b: 2, a: 1 };
+
+console.log(_.isEqual(o1, o2));
+process.exit();
 
 var enclosureConfig = {
     releaseStatus: 'Liberada',

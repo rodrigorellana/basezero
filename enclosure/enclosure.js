@@ -233,21 +233,22 @@ class Enclosure {
             complexToFind.push(bedComplex.name);
         });
         
+        //     Paso 1. Buscar cama idéntica
+        //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
         var foundBeds = [];
         _(eventualBeds).forEach(function (tmpBed) {
             let tmpFound = _.filter(tmpBed.complex, x => _.includes(complexToFind, x.name));
             if (tmpFound.length > 0)
               foundBeds.push(tmpBed);
         });
-
-        return foundBeds;
-
-        //     Paso 1. Buscar cama idéntica
-        //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
-
+        
         //     Paso 2. Buscar cama similar
         //     Entre todas las camas actuales liberadas del recinto, buscar la que tenga similares características a la solicitada. 
+        var withArtifacts = _.filter(eventualBeds, x => x.artifacts !== null && x.artifacts.length > 0);
+        // la misma instrumentaira
 
+
+        return foundBeds;
 
     }
 

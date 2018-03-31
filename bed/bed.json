@@ -13,9 +13,7 @@
             "description": ""
         }
     ],
-    "artifacts": {
-        "needArtifactAssurance": false,
-        "artifactAssurance": false,
+    "artifacts": {                
         "artifacts": [{
             "name": "Respirador",
             "description": "",

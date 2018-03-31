@@ -2,30 +2,72 @@ const pad = require('pad-left');
 const uuidV4 = require('uuid/v4');
 var _ = require('lodash');
 
-exports.getRandomComplex = function()
-{
-    var randomObjs = [{
-        "name": "UTI",
-        "description": ""
-    }, {
-        "name": "UCI",
-        "description": ""
-    }, {
-        "name": "NEO",
-        "description": ""
-    }, {
-        "name": "ADU",
-        "description": ""
-    }, {
-        "name": "MUJ",
-        "description": ""
-    }, {
-        "name": "MAT",
-        "description": ""
-    }, {
-        "name": "POL",
-        "description": ""
-    }];
+exports.getRandomArtifacts = function () {
+    var randomObjs = [
+        {
+            "name": "UTI",
+            "description": ""
+        },
+        {
+            "name": "UCI",
+            "description": ""
+        },
+        {
+            "name": "NEO",
+            "description": ""
+        },
+        {
+            "name": "ADU",
+            "description": ""
+        },
+        {
+            "name": "MUJ",
+            "description": ""
+        },
+        {
+            "name": "MAT",
+            "description": ""
+        },
+        {
+            "name": "POL",
+            "description": ""
+        }
+    ];
+
+    return _.sample(randomObjs);
+};
+
+exports.getRandomComplex = function () {
+    var randomObjs = [
+        {
+            "name": "UTI",
+            "description": ""
+        },
+        {
+            "name": "UCI",
+            "description": ""
+        },
+        {
+            "name": "NEO",
+            "description": ""
+        },
+        {
+            "name": "ADU",
+            "description": ""
+        },
+        {
+            "name": "MUJ",
+            "description": ""
+        },
+        {
+            "name": "MAT",
+            "description": ""
+        },
+        {
+            "name": "POL",
+            "description": ""
+        }
+    ];
 
     return _.sample(randomObjs);
 };

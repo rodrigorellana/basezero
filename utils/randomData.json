@@ -1,0 +1,69 @@
+{
+    "artifacts": [
+        {
+            "name": "Respirador",
+            "description": "",
+            "exists": false
+        },
+        {
+            "name": "Oxigenador",
+            "description": "",
+            "exists": false
+        },
+        {
+            "name": "Inhalador",
+            "description": "",
+            "exists": false
+        },
+        {
+            "name": "Oxigeno D400",
+            "description": "",
+            "exists": false
+        },
+        {
+            "name": "Monitor X",
+            "description": "",
+            "exists": false
+        },
+        {
+            "name": "Aspirador secreciones",
+            "description": "",
+            "exists": false
+        },
+        {
+            "name": "Flujometro",
+            "description": "",
+            "exists": false
+        }
+    ],
+    "complex": [
+        {
+            "name": "UTI",
+            "description": ""
+        },
+        {
+            "name": "UCI",
+            "description": ""
+        },
+        {
+            "name": "NEO",
+            "description": ""
+        },
+        {
+            "name": "ADU",
+            "description": ""
+        },
+        {
+            "name": "MUJ",
+            "description": ""
+        },
+        {
+            "name": "MAT",
+            "description": ""
+        },
+        {
+            "name": "POL",
+            "description": ""
+        }
+    ]
+}

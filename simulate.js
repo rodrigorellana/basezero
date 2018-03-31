@@ -3,11 +3,13 @@ var enclosureLib = require('./enclosure/enclosure');
 var universe = require('./enclosure/enclosureUniverse.json');
 var _ = require('lodash');
 
-var o1 = { a: 1, b: 2, c: { d: 1 } };
-var o2 = { c: { d: 1 }, b: 2, a: 1 };
 
-console.log(_.isEqual(o1, o2));
-process.exit();
+
+// var o1 = { a: 1, b: 2, c: { d: 1 } };
+// var o2 = { c: { d: 1 }, b: 2, a: 1 };
+
+// console.log(_.isEqual(o1, o2));
+// process.exit();
 
 var enclosureConfig = {
     releaseStatus: 'Liberada',
@@ -19,7 +21,7 @@ var enclosureConfig = {
 const enclosure = new enclosureLib.Enclosure(enclosureConfig);
 enclosure.createUniverse(universe);
 
-var bed12 = enclosure.beds[12];
+var bed12 = enclosure.beds[11];
 let newBed = Object.assign({}, bed12);
 
 console.log(enclosure.getUniverse());
@@ -29,10 +31,9 @@ console.log(enclosure.getUniverse());
 
 // console.log(enclosure.getUniverse());
 console.log(enclosure.takeBed());
-newBed.code = 'asd';
-console.log(enclosure.takeBed(newBed));
 
-console.log(enclosure.getUniverse());
+console.log(enclosure.findBed(newBed));
+
 
 var complex = [
     {
@@ -63,3 +64,6 @@ console.log(enclosure.identifyBed(bed12, 3));
 
 
 // console.log(enclosure.beds);
+
+
+console.log(enclosure.beds);

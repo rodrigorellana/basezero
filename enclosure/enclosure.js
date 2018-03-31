@@ -6,6 +6,7 @@ var galeno = require('./../galeno/galeno');
 var _ = require('lodash');
 var utils = require('./../utils/utils');
 
+
 colors.setTheme({
     silly: 'rainbow',
     input: 'grey',
@@ -105,6 +106,14 @@ class Enclosure {
             newBed.localStatus = this.getBedStatus(bedType, false);
             newBed.internalId = utils.generateGUID();
             newBed.enclosureId = this.main.internalId;
+            newBed.complex = [];
+            newBed.complex.push(utils.getRandomComplex());
+
+            if (i % 2 === 0)
+            {
+                newBed.artifacts = null;
+                newBed.complex =  _.union(newBed.complex, [utils.getRandomComplex()]);
+            }
             this.getAllBeds().push(newBed);
         }
     }
@@ -214,17 +223,31 @@ class Enclosure {
     }
 
     requestBed(bedRequest) {
-        
+
     }
 
-    findBed(bedFind)
-    {
-    //     Paso 1. Buscar cama idéntica
-    //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
+    findBed(bedFind) {
+        var eventualBeds = this.getReleasedBeds();
+        var complexToFind = [];
+        _(bedFind.complex).forEach(function (bedComplex) {
+            complexToFind.push(bedComplex.name);
+        });
         
-    //     Paso 2. Buscar cama similar
-    //     Entre todas las camas actuales liberadas del recinto, buscar la que tenga similares características a la solicitada. 
-        
+        var foundBeds = [];
+        _(eventualBeds).forEach(function (tmpBed) {
+            let tmpFound = _.filter(tmpBed.complex, x => _.includes(complexToFind, x.name));
+            if (tmpFound.length > 0)
+              foundBeds.push(tmpBed);
+        });
+
+        return foundBeds;
+
+        //     Paso 1. Buscar cama idéntica
+        //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
+
+        //     Paso 2. Buscar cama similar
+        //     Entre todas las camas actuales liberadas del recinto, buscar la que tenga similares características a la solicitada. 
+
 
     }
 

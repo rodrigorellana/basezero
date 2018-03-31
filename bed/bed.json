@@ -11,8 +11,7 @@
     "complex": [{
             "name": "UTI",
             "description": ""
-        },
-        {}
+        }
     ],
     "artifacts": {
         "needArtifactAssurance": false,

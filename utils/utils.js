@@ -1,75 +1,40 @@
 const pad = require('pad-left');
 const uuidV4 = require('uuid/v4');
+const randomData = require('./randomData.json');
+const NodeCache = require('node-cache');
+const myCache = new NodeCache({ stdTTL: 0, checkperiod: 0, useClones: true, deleteOnExpire: false });
 var _ = require('lodash');
 
-exports.getRandomArtifacts = function () {
-    var randomObjs = [
-        {
-            "name": "UTI",
-            "description": ""
-        },
-        {
-            "name": "UCI",
-            "description": ""
-        },
-        {
-            "name": "NEO",
-            "description": ""
-        },
-        {
-            "name": "ADU",
-            "description": ""
-        },
-        {
-            "name": "MUJ",
-            "description": ""
-        },
-        {
-            "name": "MAT",
-            "description": ""
-        },
-        {
-            "name": "POL",
-            "description": ""
-        }
-    ];
+exports.getRandomArtifacts = function (quantity) {
+    var successGetcache = myCache.get("getRandomArtifacts");
+    if (successGetcache == undefined) {
+        _.map(randomData.artifacts, function (ra) { return ra.id = exports.generateGUID() });
+        myCache.set("getRandomArtifacts", randomData.artifacts, 10000);
+        successGetcache = randomData.artifacts;
+    }
 
-    return _.sample(randomObjs);
+    var q = quantity || _.random(2, successGetcache.length);
+    return _.sampleSize(successGetcache, q);
 };
 
-exports.getRandomComplex = function () {
-    var randomObjs = [
-        {
-            "name": "UTI",
-            "description": ""
-        },
-        {
-            "name": "UCI",
-            "description": ""
-        },
-        {
-            "name": "NEO",
-            "description": ""
-        },
-        {
-            "name": "ADU",
-            "description": ""
-        },
-        {
-            "name": "MUJ",
-            "description": ""
-        },
-        {
-            "name": "MAT",
-            "description": ""
-        },
-        {
-            "name": "POL",
-            "description": ""
-        }
-    ];
+exports.getRandomComplex = function (quantity) {
+    var successGetcache = myCache.get("getRandomComplex");
+    if (successGetcache == undefined) {
+        _.map(randomData.complex, function (rc) { return rc.id = exports.generateGUID() });
+        myCache.set("getRandomComplex", randomData.complex, 10000);
+        successGetcache = randomData.complex;
+    }
 
-    return _.sample(randomObjs);
+    var q = quantity || _.random(2, successGetcache.length);
+    return _.sampleSize(successGetcache, q);
+};
+
+exports.getPropertyValuesFromArray = function (arrayObject, propertyName) {
+    var properties = [];
+    _(arrayObject).forEach(function (tmpObject) {
+        properties.push(tmpObject[propertyName]);
+    });
+    return properties;
 };
 
 exports.findMessage = function (array, findObject, success) {

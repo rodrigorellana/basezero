@@ -15,10 +15,12 @@
     ],
     "artifacts": {                
         "artifacts": [{
+            "internalId" : null,
             "name": "Respirador",
             "description": "",
             "exists": false
         }, {
+            "internalId" : null,
             "name": "Oxigenador",
             "description": "",
             "exists": true

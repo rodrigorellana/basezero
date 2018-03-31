@@ -106,13 +106,12 @@ class Enclosure {
             newBed.localStatus = this.getBedStatus(bedType, false);
             newBed.internalId = utils.generateGUID();
             newBed.enclosureId = this.main.internalId;
-            newBed.complex = [];
-            newBed.complex.push(utils.getRandomComplex());
+            newBed.complex = utils.getRandomComplex(2);
+            newBed.artifacts = utils.getRandomArtifacts();
 
-            if (i % 2 === 0)
-            {
+            if (i % 2 === 0) {
                 newBed.artifacts = null;
-                newBed.complex =  _.union(newBed.complex, [utils.getRandomComplex()]);
+                // newBed.complex =  _.union(newBed.complex, [utils.getRandomComplex()]);
             }
             this.getAllBeds().push(newBed);
         }
@@ -228,28 +227,31 @@ class Enclosure {
 
     findBed(bedFind) {
         var eventualBeds = this.getReleasedBeds();
-        var complexToFind = [];
-        _(bedFind.complex).forEach(function (bedComplex) {
-            complexToFind.push(bedComplex.name);
-        });
-        
+        var complexToFind = utils.getPropertyValuesFromArray(bedFind.complex, 'name');
+        var artifactsToFind = utils.getPropertyValuesFromArray(bedFind.artifacts, 'name');
+
+        console.log(colors.help("Finding artifacts: [%s] - complex: [%s]"), artifactsToFind.join(', '), complexToFind.join(','));
         //     Paso 1. Buscar cama idéntica
         //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
         var foundBeds = [];
         _(eventualBeds).forEach(function (tmpBed) {
             let tmpFound = _.filter(tmpBed.complex, x => _.includes(complexToFind, x.name));
             if (tmpFound.length > 0)
-              foundBeds.push(tmpBed);
+                foundBeds.push(tmpBed);
         });
-        
+
         //     Paso 2. Buscar cama similar
         //     Entre todas las camas actuales liberadas del recinto, buscar la que tenga similares características a la solicitada. 
         var withArtifacts = _.filter(eventualBeds, x => x.artifacts !== null && x.artifacts.length > 0);
-        // la misma instrumentaira
+        _(withArtifacts).forEach(function (artifactBed) {
+            var artifacts = utils.getPropertyValuesFromArray(artifactBed.artifacts, 'name');
+            var intersection = _.intersectionBy(artifactsToFind, artifacts);
+            if (intersection.length > 0)
+                foundBeds.push(artifactBed);
+        });
 
-
-        return foundBeds;
-
+        console.log(colors.help("[%d] beds found"), foundBeds.length);
+        return _.uniq(foundBeds);
     }
 
     takeBed(bedSearch) {

@@ -15,13 +15,13 @@ var enclosureConfig = {
     releaseStatus: 'Liberada',
     takenStatus: 'Ocupada',
     bedStatus: 'bedStatus',
-    notFoundStatus: 'Inexistente'
+    notFoundStatus: 'Inexistente'   
 };
 
 const enclosure = new enclosureLib.Enclosure(enclosureConfig);
 enclosure.createUniverse(universe);
 
-var bed12 = enclosure.beds[11];
+var bed12 = enclosure.beds[12];
 let newBed = Object.assign({}, bed12);
 
 console.log(enclosure.getUniverse());
@@ -32,8 +32,9 @@ console.log(enclosure.getUniverse());
 // console.log(enclosure.getUniverse());
 console.log(enclosure.takeBed());
 
-console.log(enclosure.findBed(newBed));
-
+newBed.complex.length = 1;
+newBed.artifacts.length = 3;
+var bedsFound = enclosure.findBed(newBed);
 
 var complex = [
     {
@@ -62,8 +63,3 @@ bed12.code = 'asd';
 console.log(enclosure.identifyBed(bed12, 3));
 // console.log(enclosure.identifyBed(b3, 3));
 
-
-// console.log(enclosure.beds);
-
-
-console.log(enclosure.beds);

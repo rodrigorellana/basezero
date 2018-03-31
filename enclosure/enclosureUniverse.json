@@ -1,9 +1,9 @@
 {
-    "Liberada": 7,
-    "Ocupada": 2,    
-    "En mantencion": 1,
-    "Aislada": 4,
-    "Post Atencion": 5,
-    "Deshabilitada" : 2
+    "Liberada": 6,
+    "Ocupada": 12,    
+    "En mantencion": 11,
+    "Aislada": 14,
+    "Post Atencion": 15,
+    "Deshabilitada" : 12
 }
 

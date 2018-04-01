@@ -29,10 +29,26 @@ exports.getRandomComplex = function (quantity) {
     return _.sampleSize(successGetcache, q);
 };
 
+exports.getRandomNetworks = function (quantity) {
+    var successGetcache = myCache.get("getRandomNetworks");
+    if (successGetcache == undefined) {
+        _.map(randomData.networks, function (rc) { return rc.id = exports.generateGUID() });
+        myCache.set("getRandomNetworks", randomData.networks, 10000);
+        successGetcache = randomData.networks;
+    }
+
+    var q = quantity || _.random(2, successGetcache.length);
+    return _.sampleSize(successGetcache, q);
+};
+ 
 exports.getPropertyValuesFromArray = function (arrayObject, propertyName) {
     var properties = [];
+    if (!arrayObject || arrayObject.length == 0)
+        return properties;
+
     _(arrayObject).forEach(function (tmpObject) {
-        properties.push(tmpObject[propertyName]);
+        if (tmpObject && tmpObject[propertyName])
+            properties.push(tmpObject[propertyName]);
     });
     return properties;
 };

@@ -5,7 +5,7 @@ var bed = require('./../bed/bed.json');
 var galeno = require('./../galeno/galeno');
 var _ = require('lodash');
 var utils = require('./../utils/utils');
-
+const randomWord = require('random-word');
 
 colors.setTheme({
     silly: 'rainbow',
@@ -62,7 +62,8 @@ class Enclosure {
         if (!config)
             config = utils.getDefaultConfiguration();
 
-        this.main = enclosureData; //PULG enc get from datastore with and ID
+        this.main = _.clone(enclosureData); //PULG enc get from datastore with and ID
+        //this.main = Object.assign({}, enclosureData); //PULG enc get from datastore with and ID
         if (!this.main.areas)
             this.main.areas = [];
 
@@ -73,6 +74,10 @@ class Enclosure {
         this.flagsTypes = new Enum(this.galeno.getFlags());
         this.galenoBedStatus = this.galeno.getBedStatus();
         this.main.complex = this.main.complex.concat(this.galeno.getComplex());
+        this.main.networks = utils.getRandomNetworks(3);
+        this.main.name = randomWord();
+        this.main.code = this.main.name.substring(0, 3);
+        this.main.internalId = utils.generateGUID();
 
         this.config = config;
         this.config.takenStatus = _.filter(this.galenoBedStatus, x => x.name === config.takenStatus)[0];
@@ -117,7 +122,7 @@ class Enclosure {
         }
     }
 
-    getUniverse() {
+    getUniverse(options = { log: true }) {
         var allBeds = this.getAllBeds();
         var result = [];
 
@@ -126,7 +131,7 @@ class Enclosure {
                 x => x.mainStatus != null
                     && x.mainStatus.name === galenoStatus.name);
 
-            result.push({ "Status": galenoStatus.name, "Quantity": bedOfType.length });
+            result.push({ 'Status': galenoStatus.name, 'Quantity': bedOfType.length });
         });
 
         this.main.bedStatus.forEach(function (localStatus) {
@@ -134,10 +139,11 @@ class Enclosure {
                 x => x.localStatus != null
                     && x.localStatus.name === localStatus.name);
 
-            result.push({ "Status": localStatus.name, "Quantity": bedOfType.length });
+            result.push({ 'Status': localStatus.name, 'Quantity': bedOfType.length });
         });
 
-        console.log(colors.warn("-= Universe =-"));
+        if (options.log)
+            console.log(colors.warn('\n -= Listing universe on [%s] enclosure=-'), this.main.name);
         return result;
     }
 
@@ -146,9 +152,9 @@ class Enclosure {
         main.beds = [];
         Object.keys(universe).forEach(function (type) {
             var quantity = universe[type];
-            main.createBeds(type, quantity);
+            main.createBeds(type, _.random(2, quantity));
         });
-        console.log(colors.green("Universe: %d beds created"), main.beds.length);
+        console.log(colors.green("Universe: %d beds created on [%s] enclosure"), main.beds.length, this.main.name);
     }
 
     changeStatusBed(bed, status) {
@@ -225,19 +231,20 @@ class Enclosure {
 
     }
 
-    findBed(bedFind) {
+    findBed(bedFind, options) {
         var eventualBeds = this.getReleasedBeds();
         var complexToFind = utils.getPropertyValuesFromArray(bedFind.complex, 'name');
         var artifactsToFind = utils.getPropertyValuesFromArray(bedFind.artifacts, 'name');
 
-        console.log(colors.help("Finding artifacts: [%s] - complex: [%s]"), artifactsToFind.join(', '), complexToFind.join(','));
+        var logMsg = 'Finding bed {artifacts [%s] - complex [%s] on enclosure [%s]}';
+
         //     Paso 1. Buscar cama idéntica
         //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
         var foundBeds = [];
         _(eventualBeds).forEach(function (tmpBed) {
             let tmpFound = _.filter(tmpBed.complex, x => _.includes(complexToFind, x.name));
             if (tmpFound.length > 0)
-                foundBeds.push(tmpBed);
+                foundBeds.push(tmpBed); 
         });
 
         //     Paso 2. Buscar cama similar
@@ -248,9 +255,13 @@ class Enclosure {
             var intersection = _.intersectionBy(artifactsToFind, artifacts);
             if (intersection.length > 0)
                 foundBeds.push(artifactBed);
-        });
+        });    
 
-        console.log(colors.help("[%d] beds found"), foundBeds.length);
+        if (options.log) {
+            logMsg += ': [%d] beds found';
+            console.log(colors.help(logMsg), artifactsToFind.join(', '), complexToFind.join(','), this.main.name, foundBeds.length);
+        }
+
         return _.uniq(foundBeds);
     }
 
@@ -313,7 +324,7 @@ class Enclosure {
         var cnt = 1;
         var code = null;
         do {
-            let s3 = this.main.id.substring(0, 3);
+            let s3 = this.main.name.substring(0, 3);
             var abr = utils.padLeft(cnt, this.main.bedLenghtCode, '0');
             code = s3 + '-' + abr;
             res = _.filter(allBeds, x => x.code === code);
@@ -324,33 +335,31 @@ class Enclosure {
         return code;
     }
 
-    identifyBed(bed, identificationType) {
-        var msg = '';
+    identifyBed(bed, options) {
         var success = true;
         var currentBed = null;
+        var filterMsg = {};
 
         try {
+            var identificationType = options.identificationType;
+            var enumTypes = new Enum(this.galeno.getIdentifycationType());
             currentBed = this.getBed(bed.internalId);
+            currentBed.identificationType = enumTypes.get(identificationType);
+            filterMsg = currentBed.identificationType.key;
 
-            if (utils.validString(currentBed.code)) {
-                msg = 'La cama ya tiene un código asignado';
+            if (utils.validString(currentBed.code) && !options.overwrite) {
+                success = false;
+                filterMsg = { first: filterMsg, second: this.config.AlreadyExitsCode };
             }
-            else {
-                var enumTypes = new Enum(this.galeno.getIdentifycationType());
-                if (identificationType == enumTypes.AutomaticString) {
-                    currentBed.code = this.getCodeRandomString();
-                }
-
-                currentBed.identificationType = enumTypes.get(identificationType);
-                msg = 'La cama fue identificada correctamente';
+            else if (currentBed.identificationType == enumTypes.AutomaticString) {
+                currentBed.code = this.getCodeRandomString();
             }
         }
         catch (e) {
             success = false;
-            msg = e;
+            currentBed = e;
         }
-
-        return this.getMessage(msg, success, currentBed);
+        return this.getMessage({ context: this.config.identificationType, filter: filterMsg }, success, currentBed);
     }
 
     createAreas(areas) {
@@ -394,6 +403,7 @@ class Enclosure {
                 if (hasSame.length > 0)
                     exists.push(complex);
                 else {
+                    complex.id = utils.generateGUID();
                     this.main.complex.push(complex);
                     cnt++;
                 }

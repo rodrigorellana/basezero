@@ -1,26 +1,27 @@
-
 var enclosureLib = require('./enclosure/enclosure');
 var universe = require('./enclosure/enclosureUniverse.json');
 var _ = require('lodash');
-
-
-
-// var o1 = { a: 1, b: 2, c: { d: 1 } };
-// var o2 = { c: { d: 1 }, b: 2, a: 1 };
-
-// console.log(_.isEqual(o1, o2));
-// process.exit();
+var galeno = require('./galeno/galeno');
 
 var enclosureConfig = {
     releaseStatus: 'Liberada',
     takenStatus: 'Ocupada',
     bedStatus: 'bedStatus',
-    notFoundStatus: 'Inexistente'   
+    notFoundStatus: 'Inexistente',
+    AlreadyExitsCode: 'AlreadyExitsCode',
+    identificationType: "identificationType"
 };
 
-const enclosure = new enclosureLib.Enclosure(enclosureConfig);
-enclosure.createUniverse(universe);
+global.enclosures = [];
+for (let index = 0; index < 200; index++) {
+    global.enclosures.push(new enclosureLib.Enclosure(Object.assign({}, enclosureConfig)));
+    var current = global.enclosures[global.enclosures.length - 1];
+    current.createUniverse(universe);
+}
 
+var galeno = new galeno.Galeno();
+
+var enclosure = global.enclosures[0];
 var bed12 = enclosure.beds[12];
 let newBed = Object.assign({}, bed12);
 
@@ -30,27 +31,29 @@ console.log(enclosure.getUniverse());
 // console.log(enclosure.releaseBed(bed12));
 
 // console.log(enclosure.getUniverse());
-console.log(enclosure.takeBed());
+// console.log(enclosure.takeBed());
 
 newBed.complex.length = 1;
-newBed.artifacts.length = 3;
-var bedsFound = enclosure.findBed(newBed);
+if (newBed.artifacts)
+    newBed.artifacts.length = 3;
 
-var complex = [
-    {
-        name: "UTI",
-        description: ""
-    },
-    {
-        name: "NEO",
-    }
-    ,
-    {
-        name: "NEasdO",
-    }
-];
+var bedsFound = galeno.findBed(newBed, { firstEnclosure: true, log: true });
 
-console.log(enclosure.createComplex(complex));
+// var complex = [
+//     {
+//         name: "UTI",
+//         description: ""
+//     },
+//     {
+//         name: "NEO",
+//     }
+//     ,
+//     {
+//         name: "NEasdO",
+//     }
+// ];
+
+// console.log(enclosure.createComplex(complex));
 
 
 
@@ -59,7 +62,7 @@ console.log(enclosure.createComplex(complex));
 // console.log(b3.internalId);
 
 // console.log(enclosure.identifyBed(b1, 3));
-bed12.code = 'asd';
-console.log(enclosure.identifyBed(bed12, 3));
+// bed12.code = 'asddddd';
+// console.log(enclosure.identifyBed(bed12, { identificationType: 3 }));
 // console.log(enclosure.identifyBed(b3, 3));
 

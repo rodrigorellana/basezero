@@ -65,5 +65,43 @@
             "name": "POL",
             "description": ""
         }
+    ],
+    "networks": [
+        {
+            "name": "RED01",
+            "description": ""
+        },
+        {
+            "name": "Valparaiso Oriente",
+            "description": ""
+        },
+        {
+            "name": "Red005",
+            "description": ""
+        },
+        {
+            "name": "Oriente Norte 5",
+            "description": ""
+        },
+        {
+            "name": "Santiago Oriente",
+            "description": ""
+        },
+        {
+            "name": "Santiago Poniente",
+            "description": ""
+        },
+        {
+            "name": "Oeste Sur",
+            "description": ""
+        },
+        {
+            "name": "La Reina 32",
+            "description": ""
+        },
+        {
+            "name": "Oriente 33",
+            "description": ""
+        }
     ]
 }

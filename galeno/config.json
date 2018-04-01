@@ -1,5 +1,6 @@
 {
-    "bedStatus": [{
+    "bedStatus": [
+        {
             "name": "Liberada",
             "description": "",
             "blocked": false
@@ -16,14 +17,16 @@
         "AutomaticString": 3,
         "ManualString": 4
     },
-    "messages": [{
+    "messages": [
+        {
             "default": {
                 "ok": "Proceso correcto",
                 "error": "Hubo un error al procesar la acción, favor intente nuevamente"
             }
         },
         {
-            "identificationType": [{
+            "identificationType": [
+                {
                     "id": "AutomaticQR",
                     "ok": "Código QR generado correctamente",
                     "error": "Hubo un error al generar el código QR"
@@ -32,11 +35,17 @@
                     "id": "AutomaticString",
                     "ok": "La cama fue identificada correctamente",
                     "error": "Hubo un error al establecer un código a la cama"
+                },
+                {
+                    "id": "AlreadyExitsCode",
+                    "ok": "",
+                    "error": "La cama ya tiene un código asignado"
                 }
             ]
         },
         {
-            "bedStatus": [{
+            "bedStatus": [
+                {
                     "id": "Liberada",
                     "ok": "La cama ha sido liberada correctamente",
                     "error": "Hubo un error al liberar la cama"
@@ -58,7 +67,8 @@
         "IdentifyBed": 1,
         "ManageBed": 2
     },
-    "complex": [{
+    "complex": [
+        {
             "name": "UTI",
             "description": ""
         },

@@ -13,14 +13,12 @@ var enclosureConfig = {
 };
 
 global.enclosures = [];
-for (let index = 0; index < 200; index++) {
+for (let index = 0; index < 100; index++) {
     global.enclosures.push(new enclosureLib.Enclosure(Object.assign({}, enclosureConfig)));
     var current = global.enclosures[global.enclosures.length - 1];
     current.createBedsUniverse(universe.beds, { log: false });
-    current.createUsersUniverse(universe.users, { log: true });
+    current.createUsersUniverse(universe.users, { log: false });
 }
-
-
 
 var galeno = new galeno.Galeno();
 
@@ -30,7 +28,7 @@ let newBed = Object.assign({}, bed12);
 
 console.log(enclosure.getUniverse());
 
-console.log(enclosure.users);
+console.log(enclosure);
 //newBed.code = 'asds';
 //console.log(enclosure.releaseBed(newBed));
 // console.log(enclosure.releaseBed(bed12));

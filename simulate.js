@@ -16,8 +16,11 @@ global.enclosures = [];
 for (let index = 0; index < 200; index++) {
     global.enclosures.push(new enclosureLib.Enclosure(Object.assign({}, enclosureConfig)));
     var current = global.enclosures[global.enclosures.length - 1];
-    current.createUniverse(universe);
+    current.createBedsUniverse(universe.beds, { log: false });
+    current.createUsersUniverse(universe.users, { log: true });
 }
+
+
 
 var galeno = new galeno.Galeno();
 
@@ -26,6 +29,8 @@ var bed12 = enclosure.beds[12];
 let newBed = Object.assign({}, bed12);
 
 console.log(enclosure.getUniverse());
+
+console.log(enclosure.users);
 //newBed.code = 'asds';
 //console.log(enclosure.releaseBed(newBed));
 // console.log(enclosure.releaseBed(bed12));
@@ -37,7 +42,7 @@ newBed.complex.length = 1;
 if (newBed.artifacts)
     newBed.artifacts.length = 3;
 
-var bedsFound = galeno.findBed(newBed, { firstEnclosure: true, log: true });
+var bedsFound = galeno.findBed(newBed, { log: false });
 
 // var complex = [
 //     {

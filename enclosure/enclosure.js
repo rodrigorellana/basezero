@@ -5,7 +5,6 @@ var bed = require('./../bed/bed.json');
 var galeno = require('./../galeno/galeno');
 var _ = require('lodash');
 var utils = require('./../utils/utils');
-const randomWord = require('random-word');
 
 colors.setTheme({
     silly: 'rainbow',
@@ -74,8 +73,8 @@ class Enclosure {
         this.flagsTypes = new Enum(this.galeno.getFlags());
         this.galenoBedStatus = this.galeno.getBedStatus();
         this.main.complex = this.main.complex.concat(this.galeno.getComplex());
-        this.main.networks = utils.getRandomNetworks(3);
-        this.main.name = randomWord();
+        this.main.networks = utils.getRandomNetworks(2);
+        this.main.name = utils.getRandomWord();
         this.main.code = this.main.name.substring(0, 3);
         this.main.internalId = utils.generateGUID();
 
@@ -103,8 +102,11 @@ class Enclosure {
         //PULG bed get from datastore
     }
 
-    createBeds(bedType, quantity) {
-        console.log('create %d beds of %s type in %s enclosure', quantity, bedType, this.main.name);
+    createBeds(bedType, quantity, options = { log: true }) {
+        if (options.log) {
+            console.log('create %d beds of %s type in %s enclosure', quantity, bedType, this.main.name);
+        }
+
         for (let i = 1; i <= quantity; i++) {
             let newBed = Object.assign({}, bed);
             newBed.mainStatus = this.getBedStatus(bedType, true);
@@ -142,19 +144,50 @@ class Enclosure {
             result.push({ 'Status': localStatus.name, 'Quantity': bedOfType.length });
         });
 
-        if (options.log)
-            console.log(colors.warn('\n -= Listing universe on [%s] enclosure=-'), this.main.name);
+        if (options.log) {
+            console.log(colors.warn('\n -= Listing universe on [%s] enclosure =-'), this.main.name);
+        }
         return result;
     }
 
-    createUniverse(universe) {
+    createBedsUniverse(universe, options = { log: true }) {
         var main = this;
         main.beds = [];
         Object.keys(universe).forEach(function (type) {
             var quantity = universe[type];
-            main.createBeds(type, _.random(2, quantity));
+            main.createBeds(type, _.random(2, quantity), options);
         });
-        console.log(colors.green("Universe: %d beds created on [%s] enclosure"), main.beds.length, this.main.name);
+
+        if (options.log) {
+            console.log(colors.green("Universe: %d beds created on [%s] enclosure"), this.beds.length, this.main.name);
+        }
+    }
+
+    createUsersUniverse(users, options = { log: true }) {
+        var main = this;
+        main.users = [];
+        
+        Object.keys(users).forEach(function (type) {
+            var quantity = users[type];
+            var finalQ = _.random(2, quantity);
+
+            for (let index = 1; index <= finalQ; index++) {
+                let name = utils.getRandomUserName();
+
+                let user = {
+                    internalId: utils.generateGUID(),
+                    name,
+                    email: name.split(' ')[0].toLowerCase() + _.sampleSize(['@gov.cl', '@gmail.com', '@hotmail.com', '@outlook.com', '@minsal.cl']),
+                    role: type
+                };
+
+                main.users.push(user);
+            }
+        });
+
+        if (options.log) {
+            console.log(colors.green("Users: %d created on [%s] enclosure"), this.users.length, this.main.name);
+        }
     }
 
     changeStatusBed(bed, status) {
@@ -231,38 +264,39 @@ class Enclosure {
 
     }
 
-    findBed(bedFind, options) {
+    findBed(bedFind, options = { log: true, findSimilar: true }) {
+
         var eventualBeds = this.getReleasedBeds();
         var complexToFind = utils.getPropertyValuesFromArray(bedFind.complex, 'name');
         var artifactsToFind = utils.getPropertyValuesFromArray(bedFind.artifacts, 'name');
-
-        var logMsg = 'Finding bed {artifacts [%s] - complex [%s] on enclosure [%s]}';
-
         //     Paso 1. Buscar cama idéntica
         //     Entre todas las camas actuales liberadas del recinto, buscar la del mismo tipo de la requerida
         var foundBeds = [];
         _(eventualBeds).forEach(function (tmpBed) {
             let tmpFound = _.filter(tmpBed.complex, x => _.includes(complexToFind, x.name));
             if (tmpFound.length > 0)
-                foundBeds.push(tmpBed); 
+                foundBeds.push(tmpBed);
         });
 
-        //     Paso 2. Buscar cama similar
-        //     Entre todas las camas actuales liberadas del recinto, buscar la que tenga similares características a la solicitada. 
-        var withArtifacts = _.filter(eventualBeds, x => x.artifacts !== null && x.artifacts.length > 0);
-        _(withArtifacts).forEach(function (artifactBed) {
-            var artifacts = utils.getPropertyValuesFromArray(artifactBed.artifacts, 'name');
-            var intersection = _.intersectionBy(artifactsToFind, artifacts);
-            if (intersection.length > 0)
-                foundBeds.push(artifactBed);
-        });    
-
-        if (options.log) {
-            logMsg += ': [%d] beds found';
-            console.log(colors.help(logMsg), artifactsToFind.join(', '), complexToFind.join(','), this.main.name, foundBeds.length);
+        if (options.findSimilar) {
+            //     Paso 2. Buscar cama similar
+            //     Entre todas las camas actuales liberadas del recinto, buscar la que tenga similares características a la solicitada. 
+            var withArtifacts = _.filter(eventualBeds, x => x.artifacts !== null && x.artifacts.length > 0);
+            _(withArtifacts).forEach(function (artifactBed) {
+                var artifacts = utils.getPropertyValuesFromArray(artifactBed.artifacts, 'name');
+                var intersection = _.intersectionBy(artifactsToFind, artifacts);
+                if (intersection.length > 0)
+                    foundBeds.push(artifactBed);
+            });
         }
 
-        return _.uniq(foundBeds);
+        var finalBeds = _.uniq(foundBeds);
+        if (options.log) {
+            let logMsg = 'Finding bed {artifacts [%s] - complex [%s] on enclosure [%s]} : [%d] beds found';
+            console.log(colors.help(logMsg), artifactsToFind.join(', '), complexToFind.join(','), this.main.name, finalBeds.length);
+        }
+
+        return finalBeds;
     }
 
     takeBed(bedSearch) {

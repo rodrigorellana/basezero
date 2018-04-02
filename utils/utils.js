@@ -4,6 +4,26 @@ const randomData = require('./randomData.json');
 const NodeCache = require('node-cache');
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 0, useClones: true, deleteOnExpire: false });
 var _ = require('lodash');
+const randomWord = require('random-word');
+var randomName = require('node-random-name');
+
+function wait(ms) {
+    var start = new Date().getTime();
+    var end = start;
+    while (end < start + ms) {
+        end = new Date().getTime();
+    }
+}
+
+exports.getRandomWord = function () {
+    return randomWord();
+};
+
+exports.getRandomUserName = function () {
+    wait(1); 
+
+    return randomName({ gender: _.sample(['male', 'female']) });
+};
 
 exports.getRandomArtifacts = function (quantity) {
     var successGetcache = myCache.get("getRandomArtifacts");
@@ -40,7 +60,7 @@ exports.getRandomNetworks = function (quantity) {
     var q = quantity || _.random(2, successGetcache.length);
     return _.sampleSize(successGetcache, q);
 };
- 
+
 exports.getPropertyValuesFromArray = function (arrayObject, propertyName) {
     var properties = [];
     if (!arrayObject || arrayObject.length == 0)

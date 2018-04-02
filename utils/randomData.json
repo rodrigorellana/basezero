@@ -102,6 +102,30 @@
         {
             "name": "Oriente 33",
             "description": ""
+        },
+        {
+            "name": "SurEste 4",
+            "description": ""
+        },
+        {
+            "name": "Copiapo Norte",
+            "description": ""
+        },
+        {
+            "name": "Santiago Oriente 6",
+            "description": ""
+        },
+        {
+            "name": "Talcahuano Central",
+            "description": ""
+        },
+        {
+            "name": "Puerto Montt 22",
+            "description": ""
+        },
+        {
+            "name": "Los Lagos oriente",
+            "description": ""
         }
     ]
 }

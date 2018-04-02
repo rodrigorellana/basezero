@@ -1,9 +1,15 @@
 {
-    "Liberada": 8,
-    "Ocupada": 12,    
-    "En mantencion": 11,
-    "Aislada": 14,
-    "Post Atencion": 15,
-    "Deshabilitada" : 12
+    "beds": {
+        "Liberada": 5,
+        "Ocupada": 12,
+        "En mantencion": 11,
+        "Aislada": 14,
+        "Post Atencion": 15,
+        "Deshabilitada": 12
+    },
+    "users": {
+        "BedManager": 3,
+        "BedUser": 2,
+        "Doctor": 2
+    }
 }
-

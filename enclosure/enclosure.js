@@ -102,6 +102,23 @@ class Enclosure {
         //PULG bed get from datastore
     }
 
+    getUsers(role) {
+        if (role) {
+            var roleUsers = [];
+            _(this.users).forEach(function (user) {
+                let tmpFound = _.filter(user.roles, x => x.name === role.name);
+                if (tmpFound.length > 0) {
+                    roleUsers.push(user);
+                }
+            });
+            return roleUsers;
+        }
+        else {
+            return this.users;
+        }
+        //PULG bed get from datastore
+    }
+
     createBeds(bedType, quantity, options = { log: true }) {
         if (options.log) {
             console.log('create %d beds of %s type in %s enclosure', quantity, bedType, this.main.name);
@@ -166,19 +183,22 @@ class Enclosure {
     createUsersUniverse(users, options = { log: true }) {
         var main = this;
         main.users = [];
-        
+
         Object.keys(users).forEach(function (type) {
             var quantity = users[type];
             var finalQ = _.random(2, quantity);
 
             for (let index = 1; index <= finalQ; index++) {
                 let name = utils.getRandomUserName();
-
+                let email = name.split(' ')[0].toLowerCase() + _.sampleSize(['@gov.cl', '@gmail.com', '@hotmail.com', '@outlook.com', '@minsal.cl']);
                 let user = {
                     internalId: utils.generateGUID(),
                     name,
-                    email: name.split(' ')[0].toLowerCase() + _.sampleSize(['@gov.cl', '@gmail.com', '@hotmail.com', '@outlook.com', '@minsal.cl']),
-                    role: type
+                    communication: {
+                        email: [{ email }],
+                        movile: ['+56975183498', '+56955458347']
+                    },
+                    roles: [utils.createRole(type)]
                 };
 
                 main.users.push(user);
@@ -188,6 +208,11 @@ class Enclosure {
         if (options.log) {
             console.log(colors.green("Users: %d created on [%s] enclosure"), this.users.length, this.main.name);
         }
+    }
+
+
+    sendNotification(bed, users, messageType) {
+
     }
 
     changeStatusBed(bed, status) {
@@ -211,7 +236,7 @@ class Enclosure {
         return setBeds;
     }
 
-    getReleasedBeds(options) {
+    getReleasedBeds() {
         var allBeds = this.getAllBeds();
 
         var setBeds = _.filter(allBeds,
@@ -260,7 +285,7 @@ class Enclosure {
         return this.getMessage({ context: this.config.bedStatus, filter: filterMsg }, success, bedFound);
     }
 
-    requestBed(bedRequest) {
+    requestBed() {
 
     }
 
@@ -296,8 +321,15 @@ class Enclosure {
             console.log(colors.help(logMsg), artifactsToFind.join(', '), complexToFind.join(','), this.main.name, finalBeds.length);
         }
 
+        //TODO: avisar a usuarios X gestoras de estas eventuales camas 
+        var bedManagers = this.getUsers({ name: 'BedManager' });
+        if (bedManagers.length > 0) {
+            this.galeno.sendNotification({ msg: 'oe piden cama', obj: bedFind }, bedManagers);
+        }
         return finalBeds;
     }
+
+
 
     takeBed(bedSearch) {
         var main = this;

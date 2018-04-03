@@ -1,7 +1,7 @@
 var enclosureLib = require('./enclosure/enclosure');
 var universe = require('./enclosure/enclosureUniverse.json');
-var _ = require('lodash');
-var galeno = require('./galeno/galeno');
+// var _ = require('lodash');
+var galenoConfig = require('./galeno/galeno');
 
 var enclosureConfig = {
     releaseStatus: 'Liberada',
@@ -20,15 +20,15 @@ for (let index = 0; index < 100; index++) {
     current.createUsersUniverse(universe.users, { log: false });
 }
 
-var galeno = new galeno.Galeno();
+var galeno = new galenoConfig.Galeno();
 
 var enclosure = global.enclosures[0];
 var bed12 = enclosure.beds[12];
 let newBed = Object.assign({}, bed12);
 
-console.log(enclosure.getUniverse());
+// console.log(enclosure.getUniverse());
 
-console.log(enclosure);
+// console.log(enclosure);
 //newBed.code = 'asds';
 //console.log(enclosure.releaseBed(newBed));
 // console.log(enclosure.releaseBed(bed12));
@@ -40,7 +40,8 @@ newBed.complex.length = 1;
 if (newBed.artifacts)
     newBed.artifacts.length = 3;
 
-var bedsFound = galeno.findBed(newBed, { log: false });
+
+galeno.findBed(newBed, { log: false });
 
 // var complex = [
 //     {
@@ -57,8 +58,6 @@ var bedsFound = galeno.findBed(newBed, { log: false });
 // ];
 
 // console.log(enclosure.createComplex(complex));
-
-
 
 // console.log(b1.internalId);
 // console.log(b2.internalId);

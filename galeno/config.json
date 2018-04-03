@@ -61,6 +61,21 @@
                     "error": "La cama no fue encontrada"
                 }
             ]
+        },
+        {
+            "manages": [
+                {
+                    "id": "Solicitada",
+                    "ok": "La cama a sido solicitada correctamente",
+                    "error": "Hubo un error al solicitar la cama",
+                    "bedManager": "Se necesita una cama para el recinto {{}}",
+                    "msgObjects": [
+                        {
+                            "enclosure": 2
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "flags": {
@@ -79,6 +94,23 @@
         {
             "name": "NEO",
             "description": ""
+        }
+    ],
+    "roles": [
+        {
+            "name": "BedManager",
+            "description": "",
+            "permissions": []
+        },
+        {
+            "name": "BedUser",
+            "description": "",
+            "permissions": []
+        },
+        {
+            "name": "Doctor",
+            "description": "",
+            "permissions": []
         }
     ]
 }

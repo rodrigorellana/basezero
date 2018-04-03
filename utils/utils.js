@@ -20,15 +20,26 @@ exports.getRandomWord = function () {
 };
 
 exports.getRandomUserName = function () {
-    wait(1); 
+    wait(1);
 
     return randomName({ gender: _.sample(['male', 'female']) });
+};
+
+exports.createRole = function (role) {
+    var fromCache = myCache.get('createRole' + role);
+    if (fromCache == undefined) {
+        var tmpRole = { name: role, 'id': exports.generateGUID(), "description": "", "permissions": [] };
+        myCache.set('createRole' + role, tmpRole, 10000);
+        fromCache = tmpRole;
+    }
+
+    return fromCache;
 };
 
 exports.getRandomArtifacts = function (quantity) {
     var successGetcache = myCache.get("getRandomArtifacts");
     if (successGetcache == undefined) {
-        _.map(randomData.artifacts, function (ra) { return ra.id = exports.generateGUID() });
+        _.map(randomData.artifacts, function (ra) { return (ra.id = exports.generateGUID()); });
         myCache.set("getRandomArtifacts", randomData.artifacts, 10000);
         successGetcache = randomData.artifacts;
     }
@@ -40,7 +51,7 @@ exports.getRandomArtifacts = function (quantity) {
 exports.getRandomComplex = function (quantity) {
     var successGetcache = myCache.get("getRandomComplex");
     if (successGetcache == undefined) {
-        _.map(randomData.complex, function (rc) { return rc.id = exports.generateGUID() });
+        _.map(randomData.complex, function (rc) { return (rc.id = exports.generateGUID()); });
         myCache.set("getRandomComplex", randomData.complex, 10000);
         successGetcache = randomData.complex;
     }
@@ -52,7 +63,7 @@ exports.getRandomComplex = function (quantity) {
 exports.getRandomNetworks = function (quantity) {
     var successGetcache = myCache.get("getRandomNetworks");
     if (successGetcache == undefined) {
-        _.map(randomData.networks, function (rc) { return rc.id = exports.generateGUID() });
+        _.map(randomData.networks, function (rc) { return (rc.id = exports.generateGUID()); });
         myCache.set("getRandomNetworks", randomData.networks, 10000);
         successGetcache = randomData.networks;
     }

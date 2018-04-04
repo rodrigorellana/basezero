@@ -323,8 +323,20 @@ class Enclosure {
 
         //TODO: avisar a usuarios X gestoras de estas eventuales camas 
         var bedManagers = this.getUsers({ name: 'BedManager' });
-        if (bedManagers.length > 0) {
-            this.galeno.sendNotification({ msg: 'oe piden cama', obj: bedFind }, bedManagers);
+        if (bedManagers.length > 0 && finalBeds.length > 0) {
+            var msg = 'Se solicita una cama desde ' + bedFind.enclosure.name + ' (' + bedFind.enclosure.code + ')';
+            msg += '\nLos detalles de la cama a solicitar son = ';
+            if (artifactsToFind.length > 0)
+                msg += '\n\t dispositivos : ' + artifactsToFind.join(',');
+            if (complexToFind.length > 0)
+                msg += '\n\t complejidades : ' + complexToFind.join(',');
+            msg += '\n\n';
+            msg += 'Se encontraron las siguentes eventuales camas en ' + this.main.name + ' (' + this.main.code + ')';
+            _.forEach(finalBeds, function (bedFound) {
+                msg += '\n' + bedFound.code;
+            });
+
+            this.galeno.sendNotification({ msg, obj: bedFind }, bedManagers);
         }
         return finalBeds;
     }

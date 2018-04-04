@@ -44,7 +44,10 @@ class Galeno {
     findBed(bed, options) {
         var networks = [];
         if (bed.enclosureId)
+        {
             networks = this.getEnclosuresByInternalId(bed.enclosureId).networks;
+            bed.enclosure = this.getEnclosuresByInternalId(bed.enclosureId);
+        }
 
         let logMsg = 'START for bed {artifacts [%s] - complex [%s]}';
         console.log(colors.warn(logMsg),
